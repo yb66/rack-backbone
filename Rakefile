@@ -52,9 +52,9 @@ namespace :cdn do
   require 'open3'
   desc "An availability check, for sanity"
   task :check do
-    require_relative './lib/rack/jquery.rb'
-    Rack::JQuery::CDN.constants.each do |const|
-      url = "#{Rack::JQuery::CDN.const_get(const)}"
+    require_relative './lib/rack/backbone.rb'
+    Rack::Backbone::CDN.constants.each do |const|
+      url = "#{Rack::Backbone::CDN.const_get(const)}"
       url = "http:#{url}" unless url.start_with? "http"
       cmd = "curl -I #{url}"
       puts cmd
