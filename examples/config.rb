@@ -1,11 +1,15 @@
 require 'sinatra/base'
 require 'haml'
 require 'rack/backbone'
+require 'rack/lodash'
+require 'rack/jquery'
 
 class App < Sinatra::Base
 
   enable :inline_templates
-  use Rack::Lodash
+  use Rack::JQuery    # << These are just here for the example.
+  use Rack::Lodash    # << Just make sure any dependencies are
+                      # available, however you decide to do that.
   use Rack::Backbone
 
   get "/" do
@@ -40,6 +44,7 @@ end
 class AppWithDefaults < Sinatra::Base
 
   enable :inline_templates
+  use Rack::JQuery
   use Rack::Lodash
   use Rack::Backbone, :organisation => :cloudflare
 
@@ -76,6 +81,7 @@ __END__
 @@jsdelivr
 %html
   %head
+    = Rack::JQuery.cdn( env )
     = Rack::Lodash.cdn( env )
     = Rack::Backbone.cdn( env, :organisation => :jsdelivr )
   = yield
@@ -83,6 +89,7 @@ __END__
 @@cloudflare
 %html
   %head
+    = Rack::JQuery.cdn( env )
     = Rack::Lodash.cdn( env )
     = Rack::Backbone.cdn( env, :organisation => :cloudflare )
   = yield
@@ -90,56 +97,48 @@ __END__
 @@unspecified
 %html
   %head
+    = Rack::JQuery.cdn( env )
     = Rack::Lodash.cdn( env )
     = Rack::Backbone.cdn(env)
   = yield
 
 @@index
   
-%input{ type: "text" placeholder: "Enter friend's name" id: "input"}
-%button#add-input
+%input{ type: "text", placeholder: "Enter friend's name", id: "input"}
+%button#add
   Add Friend
 
-%ul#friends-list
+%ul#friends
 
 :javascript
   $(function() {
 
   FriendList = Backbone.Collection.extend({
       initialize: function(){
-  
       }
   });
-  
+
   FriendView = Backbone.View.extend({
-  
       tagName: 'li',
-  
       events: {
-          'click #add-input':  'getFriend',
+          'click #add':  'getFriend',
       },
-  
       initialize: function() {
           var thisView = this;
           this.friendslist = new FriendList;
           _.bindAll(this, 'render');
           this.friendslist.bind("add", function( model ){
-              alert("hey");
               thisView.render( model );
           })
       },
-  
       getFriend: function() {
           var friend_name = $('#input').val();
           this.friendslist.add( {name: friend_name} );
       },
-  
       render: function( model ) {
-          $("#friends-list").append("<li>"+ model.get("name")+"</li>");
-          console.log('rendered')
+          $("#friends").append("<li>"+ model.get("name")+"</li>");
       },
-  
   });
-  
+
   var view = new FriendView({el: 'body'});
   });

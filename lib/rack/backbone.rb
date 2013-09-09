@@ -6,7 +6,7 @@ module Rack
 
   # Backbone CDN script tags and fallback in one neat package.
   class Backbone
-    include Helpers
+    include Rack::JQuery::Helpers
 
     # Current file name of fallback.
     BACKBONE_FILE_NAME = "backbone-#{BACKBONE_VERSION}-min.js"

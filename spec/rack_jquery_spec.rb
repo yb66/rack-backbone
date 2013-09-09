@@ -101,7 +101,7 @@ describe "Inserting the CDN" do
       end
       it_should_behave_like "Any route"
       subject { last_response.body }
-      let(:expected) { Rack::Backbone::CDN::MEDIA_TEMPLE }
+      let(:expected) { Rack::Backbone::CDN::CLOUDFLARE }
       it { should include expected }
     end
     context "Cloudflare CDN" do
@@ -127,7 +127,7 @@ describe "Serving the fallback backbone" do
   end
   it_should_behave_like "Any route"
   subject { last_response.body }
-  it { should start_with "/*! Backbone v#{Rack::Backbone::BACKBONE_VERSION}" }
+  it { should start_with "(function(){var t=this;var e=t.Backbone;" }
 
   context "Re requests" do
     before do

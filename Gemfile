@@ -14,6 +14,7 @@ group :examples do
   gem "sinatra"
   gem "haml"
   gem "rack-lodash"
+  gem "rack-jquery"
 end
 
 group :development do
