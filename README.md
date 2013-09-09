@@ -1,6 +1,6 @@
 # Rack::Backbone
 
-[Backbone](http://backbone.com/download/) CDN script tags and fallback in one neat package.
+[Backbone](http://backbonejs.org/) CDN script tags and fallback in one neat package.
 
 ### Build status ###
 
