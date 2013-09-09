@@ -9,6 +9,6 @@ module Rack
 
     # This is the release date of the Backbone file, it makes an easy "Last-Modified" date for setting the headers around caching.
     # @todo remember to change Last-Modified with each release!
-    BACKBONE_VERSION_DATE = "Thu, 18 Apr 2013 00:00:00 +0100" 
+    BACKBONE_VERSION_DATE = "Wed, 20 Mar 2013 12:13:55 +0000" 
   end
 end
