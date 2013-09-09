@@ -1,6 +1,14 @@
 # CH CH CH CHANGES #
 
-## Monday the 9th of September 2013, v0.0.1 ##
+## Monday the 9th of September 2013 ##
+
+### v0.0.2 ###
+
+* Had wrong URL to Backbone project. Fixed.
+
+----
+
+### v0.0.1 ###
 
 * First release.
 
