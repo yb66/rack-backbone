@@ -11,6 +11,11 @@ module Rack
     # Current file name of fallback.
     BACKBONE_FILE_NAME = "backbone-#{BACKBONE_VERSION}-min.js"
 
+    # Fallback source map file name without version.
+    # Because the main script doesn't call
+    # a versioned file.
+    BACKBONE_SOURCE_MAP_UNVERSIONED = "backbone-min.map"
+
     # Fallback source map file name.
     BACKBONE_SOURCE_MAP = "backbone-#{BACKBONE_VERSION}-min.map"
 
@@ -81,7 +86,7 @@ STR
     def initialize( app, options={} )
       @app, @options  = app, DEFAULT_OPTIONS.merge(options)
       @http_path_to_backbone = ::File.join @options[:http_path], BACKBONE_FILE_NAME
-      @http_path_to_source_map = ::File.join @options[:http_path], BACKBONE_SOURCE_MAP
+      @http_path_to_source_map = ::File.join @options[:http_path], BACKBONE_SOURCE_MAP_UNVERSIONED
       @organisation = options.fetch :organisation, :media_temple
     end
 
