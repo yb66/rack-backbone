@@ -39,12 +39,14 @@ module Rack
 
 
     # This javascript checks if the Backbone object has loaded. If not, that most likely means the CDN is unreachable, so it uses the local minified Backbone.
+    # It's the top half, it gets pieced together elsewhere.
     FALLBACK_TOP = <<STR
 <script type="text/javascript">
   if (typeof Backbone == 'undefined') {
     document.write(unescape("%3Cscript src='
 STR
 
+    # Bottom half of the fallback script.
     FALLBACK_BOTTOM = <<STR
 ' type='text/javascript'%3E%3C/script%3E"))
   };
