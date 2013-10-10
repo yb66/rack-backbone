@@ -1,6 +1,9 @@
 # CH CH CH CHANGES #
 
-## Next release ##
+
+## Thursday the 10th of October 2013 ##
+
+### v0.0.5 ###
 
 * Can pass `false` to the `cdn` method to just get the fallback with no CDN, useful for working locally.
 * Fixed problem with the :http_path option for the fallback route.
@@ -15,6 +18,7 @@
 * The source map URL given in the main script is unversioned, so the fallback map wasn't being found. Fixed.
 
 ----
+
 
 ### v0.0.3 ###
 
