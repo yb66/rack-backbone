@@ -1,5 +1,12 @@
 # CH CH CH CHANGES #
 
+## Next release ##
+
+* Fixed problem with the :http_path option for the fallback route.
+
+----
+
+
 ## Thursday the 19th of September 2013 ##
 
 ### v0.0.4 ###
