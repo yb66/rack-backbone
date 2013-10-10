@@ -72,9 +72,7 @@ STR
           CDN::CLOUDFLARE
       end
 
-      http_path = env["rack.backbone.http_path"]
-
-      "<script src='#{script}'></script>\n#{FALLBACK_TOP}#{http_path}#{FALLBACK_BOTTOM}"
+      %Q!<script src='#{script}'></script>\n#{FALLBACK_TOP}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
     end
 
 
