@@ -31,43 +31,60 @@ module Rack
 
     end
 
+
+    # Default options hash for the middleware.
+    DEFAULT_OPTIONS = {
+      :http_path => "/js"
+    }
+
+
     # This javascript checks if the Backbone object has loaded. If not, that most likely means the CDN is unreachable, so it uses the local minified Backbone.
-    FALLBACK = <<STR
+    # It's the top half, it gets pieced together elsewhere.
+    FALLBACK_TOP = <<STR
 <script type="text/javascript">
   if (typeof Backbone == 'undefined') {
-    document.write(unescape("%3Cscript src='/js/#{BACKBONE_FILE_NAME}' type='text/javascript'%3E%3C/script%3E"))
+    document.write(unescape("%3Cscript src='
+STR
+
+    # Bottom half of the fallback script.
+    FALLBACK_BOTTOM = <<STR
+' type='text/javascript'%3E%3C/script%3E"))
   };
 </script>
 STR
 
     # @param [Hash] env The rack env hash.
-    # @option options [Symbol] organisation Choose which CDN to use, either :jsdelivr, or :cloudflare (the default). This will override anything set via the `use` statement.
+    # @option options [Symbol] organisation Choose which CDN to use, either :jsdelivr, or :cloudflare (the default). This will override anything set via the `use` statement. Pass in `false` to force use of the local Backbonejs script. `nil` will force choosing the default CDN.
     # @return [String] The HTML script tags to get the CDN.
     def self.cdn( env, options={}  )
       if env.nil? || env.has_key?(:organisation)
         fail ArgumentError, "The Rack::Backbone.cdn method needs the Rack environment passed to it, or at the very least, an empty hash."
       end
 
-      organisation =  options[:organisation] ||
-                        env["rack.backbone.organisation"] ||
-                        :media_temple
-
-      script = case organisation
-        when :cloudflare
-          CDN::CLOUDFLARE
-        when :jsdelivr
-          CDN::JSDELIVR
-        else
-          CDN::CLOUDFLARE
+      organisation =  options[:organisation]
+      if organisation.nil?
+        organisation = 
+          env["rack.backbone.organisation"] ||
+          :media_temple
       end
-      "<script src='#{script}'></script>\n#{FALLBACK}"
+
+      warn "organisation = #{organisation.inspect}"
+      unless organisation == false
+        script_src = case organisation
+          when :cloudflare
+            CDN::CLOUDFLARE
+          when :jsdelivr
+            CDN::JSDELIVR
+          else
+            CDN::CLOUDFLARE
+        end
+          %Q!<script src='#{script_src}'></script>\n#{FALLBACK_TOP}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
+      else
+        "<script src='#{env["rack.backbone.http_path"]}'></script>"
+      end
+
     end
 
-
-    # Default options hash for the middleware.
-    DEFAULT_OPTIONS = {
-      :http_path => "/js"
-    }
 
 
     # @param [#call] app
@@ -77,9 +94,6 @@ STR
     # @example
     #   # The default:
     #   use Rack::Backbone
-    #
-    #   # With a different route to the fallback:
-    #   use Rack::Backbone, :http_path => "/assets/js"
     #
     #   # With a default organisation:
     #   use Rack::Backbone, :organisation => :cloudflare
@@ -102,6 +116,7 @@ STR
     def _call( env )
       request = Rack::Request.new(env.dup)
       env.merge! "rack.backbone.organisation" => @organisation
+      env.merge! "rack.backbone.http_path" => @http_path_to_backbone
       if request.path_info == @http_path_to_backbone
         response = Rack::Response.new
         # for caching
