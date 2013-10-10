@@ -12,7 +12,7 @@ namespace :docs do
   require 'yard'
 
   YARD::Rake::YardocTask.new :yard do |t|
-    t.files   = ['lib/**/*.rb', 'app/*.rb', 'spec/**/*.rb']
+    t.files   = ['lib/**/*.rb', 'app/*.rb']
     t.options = ['-odocs/'] # optional
   end
 
