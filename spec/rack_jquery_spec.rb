@@ -124,14 +124,14 @@ require 'timecop'
 require 'time'
 
 describe "Serving the fallback backbone" do
-  include_context "All routes"
-  let(:path){ ::File.join(http_path, BACKBONE_FILE_NAME) }
   before do
     get path
   end
   subject { last_response.body }
+  let(:path){ ::File.join(http_path, BACKBONE_FILE_NAME) }
 
   context "With the default :http_path (none given)" do
+    include_context "All routes"
     let(:http_path) { DEFAULT_OPTIONS[:http_path] }
 
     it_should_behave_like "Any route"
@@ -147,7 +147,28 @@ describe "Serving the fallback backbone" do
       end
       subject { last_response }
       its(:status) { should == 304 }
-    
+    end
+  end
+  context "Given a different http_path via the options" do
+    include_context "All routes" do
+      let(:app) {
+        Sinatra.new do
+          use Rack::JQuery
+          use Rack::Lodash
+          use Rack::Backbone, :http_path => "/assets/javascripts"
+        end
+      }
+    end
+    context "That is valid" do
+      let(:http_path) { "/assets/javascripts" }
+
+      it_should_behave_like "Any route"
+      it { should start_with "(function(){var t=this;var e=t.Backbone;" }
+    end
+    context "That is not valid" do
+      let(:http_path) { "/this/is/not/the/path/it/was/setup/with" }
+      subject { last_response }
+      it { should_not be_ok }
     end
   end
 end
