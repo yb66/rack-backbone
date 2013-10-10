@@ -41,7 +41,7 @@ module Rack
 STR
 
     # @param [Hash] env The rack env hash.
-    # @param [Symbol] organisation Choose which CDN to use, either :jsdelivr, or :cloudflare (the default). This will override anything set via the `use` statement.
+    # @option options [Symbol] organisation Choose which CDN to use, either :jsdelivr, or :cloudflare (the default). This will override anything set via the `use` statement.
     # @return [String] The HTML script tags to get the CDN.
     def self.cdn( env, options={}  )
       if env.nil? || env.has_key?(:organisation)
