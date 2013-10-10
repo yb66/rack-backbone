@@ -31,12 +31,10 @@ module Rack
 
     end
 
-    DEFAULT_HTTP_PATH = "/js"
 
     # Default options hash for the middleware.
     DEFAULT_OPTIONS = {
-      :http_path => DEFAULT_HTTP_PATH,
-      :fallback_path => ::File.join( DEFAULT_HTTP_PATH, BACKBONE_FILE_NAME)
+      :http_path => "/js"
     }
 
 
@@ -73,7 +71,10 @@ STR
         else
           CDN::CLOUDFLARE
       end
-      "<script src='#{script}'></script>\n#{FALLBACK_TOP}#{DEFAULT_OPTIONS[:fallback_path]}#{FALLBACK_BOTTOM}"
+
+      http_path = env["rack.backbone.http_path"]
+
+      "<script src='#{script}'></script>\n#{FALLBACK_TOP}#{http_path}#{FALLBACK_BOTTOM}"
     end
 
 
@@ -110,7 +111,7 @@ STR
     def _call( env )
       request = Rack::Request.new(env.dup)
       env.merge! "rack.backbone.organisation" => @organisation
-      env.merge! "rack.backbone.http_path" => @organisation
+      env.merge! "rack.backbone.http_path" => @http_path_to_backbone
       if request.path_info == @http_path_to_backbone
         response = Rack::Response.new
         # for caching

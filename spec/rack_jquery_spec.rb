@@ -3,22 +3,25 @@
 require 'spec_helper'
 require_relative "../lib/rack/backbone.rb"
 
+class Rack::Backbone # for clarity!
+
 describe "The class methods" do
-  let(:env) { {} }
-  subject { Rack::Backbone.cdn env, :organisation => organisation }
+  let(:path) {::File.join(DEFAULT_OPTIONS[:http_path],BACKBONE_FILE_NAME)}
+  let(:env) { {"rack.backbone.http_path" => path} }
+  subject(:cdn) { Rack::Backbone.cdn env, :organisation => organisation }
 
   context "Given the organisation option" do
     context "of nil (the default)" do
       let(:organisation) { nil }
-      it { should == "<script src='#{Rack::Backbone::CDN::CLOUDFLARE}'></script>\n#{Rack::Backbone::FALLBACK_TOP}#{Rack::Backbone::DEFAULT_OPTIONS[:fallback_path]}#{Rack::Backbone::FALLBACK_BOTTOM}" }
+      it { should == "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
     end
     context "of :jsdelivr" do
       let(:organisation) { :jsdelivr }
-      it { should == "<script src='#{Rack::Backbone::CDN::JSDELIVR}'></script>\n#{Rack::Backbone::FALLBACK_TOP}#{Rack::Backbone::DEFAULT_OPTIONS[:fallback_path]}#{Rack::Backbone::FALLBACK_BOTTOM}" }
+      it { should == "<script src='#{CDN::JSDELIVR}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
     end
     context "of :cloudflare" do
       let(:organisation) { :cloudflare }
-      it { should == "<script src='#{Rack::Backbone::CDN::CLOUDFLARE}'></script>\n#{Rack::Backbone::FALLBACK_TOP}#{Rack::Backbone::DEFAULT_OPTIONS[:fallback_path]}#{Rack::Backbone::FALLBACK_BOTTOM}" }
+      it { should == "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
     end
   end
 
@@ -56,7 +59,7 @@ describe "Inserting the CDN" do
       end
       it_should_behave_like "Any route"
       subject { last_response.body }
-      let(:expected) { Rack::Backbone::CDN::JSDELIVR }
+      let(:expected) { CDN::JSDELIVR }
       it { should include expected }
     end
     context "Unspecified CDN" do
@@ -65,7 +68,7 @@ describe "Inserting the CDN" do
       end
       it_should_behave_like "Any route"
       subject { last_response.body }
-      let(:expected) { Rack::Backbone::CDN::CLOUDFLARE }
+      let(:expected) { CDN::CLOUDFLARE }
       it { should include expected }
     end
     context "Cloudflare CDN" do
@@ -74,7 +77,7 @@ describe "Inserting the CDN" do
       end
       it_should_behave_like "Any route"
       subject { last_response.body }
-      let(:expected) { Rack::Backbone::CDN::CLOUDFLARE }
+      let(:expected) { CDN::CLOUDFLARE }
       it { should include expected }
     end
   end
@@ -92,7 +95,7 @@ describe "Inserting the CDN" do
       end
       it_should_behave_like "Any route"
       subject { last_response.body }
-      let(:expected) { Rack::Backbone::CDN::JSDELIVR }
+      let(:expected) { CDN::JSDELIVR }
       it { should include expected }
     end
     context "Unspecified CDN" do
@@ -101,7 +104,7 @@ describe "Inserting the CDN" do
       end
       it_should_behave_like "Any route"
       subject { last_response.body }
-      let(:expected) { Rack::Backbone::CDN::CLOUDFLARE }
+      let(:expected) { CDN::CLOUDFLARE }
       it { should include expected }
     end
     context "Cloudflare CDN" do
@@ -110,7 +113,7 @@ describe "Inserting the CDN" do
       end
       it_should_behave_like "Any route"
       subject { last_response.body }
-      let(:expected) { Rack::Backbone::CDN::CLOUDFLARE }
+      let(:expected) { CDN::CLOUDFLARE }
       it { should include expected }
     end
   end
@@ -122,23 +125,31 @@ require 'time'
 
 describe "Serving the fallback backbone" do
   include_context "All routes"
+  let(:path){ ::File.join(http_path, BACKBONE_FILE_NAME) }
   before do
-    get "/js/backbone-#{Rack::Backbone::BACKBONE_VERSION}-min.js"
+    get path
   end
-  it_should_behave_like "Any route"
   subject { last_response.body }
-  it { should start_with "(function(){var t=this;var e=t.Backbone;" }
 
-  context "Re requests" do
-    before do
-      at_start = Time.parse(Rack::Backbone::BACKBONE_VERSION_DATE) + 60 * 60 * 24 * 180
-      Timecop.freeze at_start
-      get "/js/backbone-#{Rack::Backbone::BACKBONE_VERSION}-min.js"
-      Timecop.travel Time.now + 86400 # add a day
-      get "/js/backbone-#{Rack::Backbone::BACKBONE_VERSION}-min.js", {}, {"HTTP_IF_MODIFIED_SINCE" => Rack::Utils.rfc2109(at_start) }
-    end
-    subject { last_response }
-    its(:status) { should == 304 }
+  context "With the default :http_path (none given)" do
+    let(:http_path) { DEFAULT_OPTIONS[:http_path] }
+
+    it_should_behave_like "Any route"
+    it { should start_with "(function(){var t=this;var e=t.Backbone;" }
+
+    context "Re requests" do
+      before do
+        at_start = Time.parse(BACKBONE_VERSION_DATE) + 60 * 60 * 24 * 180
+        Timecop.freeze at_start
+        get path
+        Timecop.travel Time.now + 86400 # add a day
+        get path, {}, {"HTTP_IF_MODIFIED_SINCE" => Rack::Utils.rfc2109(at_start) }
+      end
+      subject { last_response }
+      its(:status) { should == 304 }
     
+    end
   end
+end
+
 end
