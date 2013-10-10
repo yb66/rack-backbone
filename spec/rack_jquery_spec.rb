@@ -8,20 +8,25 @@ class Rack::Backbone # for clarity!
 describe "The class methods" do
   let(:path) {::File.join(DEFAULT_OPTIONS[:http_path],BACKBONE_FILE_NAME)}
   let(:env) { {"rack.backbone.http_path" => path} }
-  subject(:cdn) { Rack::Backbone.cdn env, :organisation => organisation }
+  let(:default_options) { {} }
+  subject(:cdn) { Rack::Backbone.cdn env, default_options.merge(options) }
 
   context "Given the organisation option" do
     context "of nil (the default)" do
-      let(:organisation) { nil }
+      let(:options) { {:organisation => nil } }
       it { should == "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
     end
     context "of :jsdelivr" do
-      let(:organisation) { :jsdelivr }
+      let(:options) { {:organisation => :jsdelivr } }
       it { should == "<script src='#{CDN::JSDELIVR}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
     end
     context "of :cloudflare" do
-      let(:organisation) { :cloudflare }
+      let(:options) { {:organisation => :cloudflare } }
       it { should == "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
+    end
+    context "of false, to get the fallback script only" do
+      let(:options) { {:organisation => false } }
+      it { should == "<script src='#{path}'></script>" }    
     end
   end
 

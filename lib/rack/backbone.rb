@@ -54,27 +54,35 @@ STR
 STR
 
     # @param [Hash] env The rack env hash.
-    # @option options [Symbol] organisation Choose which CDN to use, either :jsdelivr, or :cloudflare (the default). This will override anything set via the `use` statement.
+    # @option options [Symbol] organisation Choose which CDN to use, either :jsdelivr, or :cloudflare (the default). This will override anything set via the `use` statement. Pass in `false` to force use of the local Backbonejs script. `nil` will force choosing the default CDN.
     # @return [String] The HTML script tags to get the CDN.
     def self.cdn( env, options={}  )
       if env.nil? || env.has_key?(:organisation)
         fail ArgumentError, "The Rack::Backbone.cdn method needs the Rack environment passed to it, or at the very least, an empty hash."
       end
 
-      organisation =  options[:organisation] ||
-                        env["rack.backbone.organisation"] ||
-                        :media_temple
-
-      script = case organisation
-        when :cloudflare
-          CDN::CLOUDFLARE
-        when :jsdelivr
-          CDN::JSDELIVR
-        else
-          CDN::CLOUDFLARE
+      organisation =  options[:organisation]
+      if organisation.nil?
+        organisation = 
+          env["rack.backbone.organisation"] ||
+          :media_temple
       end
 
-      %Q!<script src='#{script}'></script>\n#{FALLBACK_TOP}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
+      warn "organisation = #{organisation.inspect}"
+      unless organisation == false
+        script_src = case organisation
+          when :cloudflare
+            CDN::CLOUDFLARE
+          when :jsdelivr
+            CDN::JSDELIVR
+          else
+            CDN::CLOUDFLARE
+        end
+          %Q!<script src='#{script_src}'></script>\n#{FALLBACK_TOP}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
+      else
+        "<script src='#{env["rack.backbone.http_path"]}'></script>"
+      end
+
     end
 
 
@@ -86,9 +94,6 @@ STR
     # @example
     #   # The default:
     #   use Rack::Backbone
-    #
-    #   # With a different route to the fallback:
-    #   use Rack::Backbone, :http_path => "/assets/js"
     #
     #   # With a default organisation:
     #   use Rack::Backbone, :organisation => :cloudflare
