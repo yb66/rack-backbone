@@ -31,11 +31,24 @@ module Rack
 
     end
 
+    DEFAULT_HTTP_PATH = "/js"
+
+    # Default options hash for the middleware.
+    DEFAULT_OPTIONS = {
+      :http_path => DEFAULT_HTTP_PATH,
+      :fallback_path => ::File.join( DEFAULT_HTTP_PATH, BACKBONE_FILE_NAME)
+    }
+
+
     # This javascript checks if the Backbone object has loaded. If not, that most likely means the CDN is unreachable, so it uses the local minified Backbone.
-    FALLBACK = <<STR
+    FALLBACK_TOP = <<STR
 <script type="text/javascript">
   if (typeof Backbone == 'undefined') {
-    document.write(unescape("%3Cscript src='/js/#{BACKBONE_FILE_NAME}' type='text/javascript'%3E%3C/script%3E"))
+    document.write(unescape("%3Cscript src='
+STR
+
+    FALLBACK_BOTTOM = <<STR
+' type='text/javascript'%3E%3C/script%3E"))
   };
 </script>
 STR
@@ -60,14 +73,9 @@ STR
         else
           CDN::CLOUDFLARE
       end
-      "<script src='#{script}'></script>\n#{FALLBACK}"
+      "<script src='#{script}'></script>\n#{FALLBACK_TOP}#{DEFAULT_OPTIONS[:fallback_path]}#{FALLBACK_BOTTOM}"
     end
 
-
-    # Default options hash for the middleware.
-    DEFAULT_OPTIONS = {
-      :http_path => "/js"
-    }
 
 
     # @param [#call] app
@@ -102,6 +110,7 @@ STR
     def _call( env )
       request = Rack::Request.new(env.dup)
       env.merge! "rack.backbone.organisation" => @organisation
+      env.merge! "rack.backbone.http_path" => @organisation
       if request.path_info == @http_path_to_backbone
         response = Rack::Response.new
         # for caching

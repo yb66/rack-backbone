@@ -10,15 +10,15 @@ describe "The class methods" do
   context "Given the organisation option" do
     context "of nil (the default)" do
       let(:organisation) { nil }
-      it { should == "<script src='#{Rack::Backbone::CDN::CLOUDFLARE}'></script>\n#{Rack::Backbone::FALLBACK}" }
+      it { should == "<script src='#{Rack::Backbone::CDN::CLOUDFLARE}'></script>\n#{Rack::Backbone::FALLBACK_TOP}#{Rack::Backbone::DEFAULT_OPTIONS[:fallback_path]}#{Rack::Backbone::FALLBACK_BOTTOM}" }
     end
     context "of :jsdelivr" do
       let(:organisation) { :jsdelivr }
-      it { should == "<script src='#{Rack::Backbone::CDN::JSDELIVR}'></script>\n#{Rack::Backbone::FALLBACK}" }
+      it { should == "<script src='#{Rack::Backbone::CDN::JSDELIVR}'></script>\n#{Rack::Backbone::FALLBACK_TOP}#{Rack::Backbone::DEFAULT_OPTIONS[:fallback_path]}#{Rack::Backbone::FALLBACK_BOTTOM}" }
     end
     context "of :cloudflare" do
       let(:organisation) { :cloudflare }
-      it { should == "<script src='#{Rack::Backbone::CDN::CLOUDFLARE}'></script>\n#{Rack::Backbone::FALLBACK}" }
+      it { should == "<script src='#{Rack::Backbone::CDN::CLOUDFLARE}'></script>\n#{Rack::Backbone::FALLBACK_TOP}#{Rack::Backbone::DEFAULT_OPTIONS[:fallback_path]}#{Rack::Backbone::FALLBACK_BOTTOM}" }
     end
   end
 
