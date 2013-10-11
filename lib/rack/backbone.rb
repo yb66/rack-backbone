@@ -55,11 +55,14 @@ STR
 
     # @param [Hash] env The rack env hash.
     # @option options [Symbol] organisation Choose which CDN to use, either :jsdelivr, or :cloudflare (the default). This will override anything set via the `use` statement. Pass in `false` to force use of the local Backbonejs script. `nil` will force choosing the default CDN.
+    # @option options [TrueClass] :debug Pass `true` to get the unminified version of the script from the CDN.
     # @return [String] The HTML script tags to get the CDN.
     def self.cdn( env, options={}  )
       if env.nil? || env.has_key?(:organisation)
         fail ArgumentError, "The Rack::Backbone.cdn method needs the Rack environment passed to it, or at the very least, an empty hash."
       end
+          
+      debug = options.fetch :debug, false
 
       organisation =  options[:organisation]
       if organisation.nil?
@@ -68,7 +71,6 @@ STR
           :media_temple
       end
 
-      warn "organisation = #{organisation.inspect}"
       unless organisation == false
         script_src = case organisation
           when :cloudflare
@@ -78,7 +80,10 @@ STR
           else
             CDN::CLOUDFLARE
         end
-          %Q!<script src='#{script_src}'></script>\n#{FALLBACK_TOP}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
+
+        script_src = "#{script_src[0..-8]}.js" if debug
+
+        %Q!<script src='#{script_src}'></script>\n#{FALLBACK_TOP}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
       else
         "<script src='#{env["rack.backbone.http_path"]}'></script>"
       end
