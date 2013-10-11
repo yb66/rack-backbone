@@ -1,6 +1,6 @@
 # CH CH CH CHANGES #
 
-## Next release ##
+## Friday the 11th of October 2013, v0.1.0 ##
 
 * Added option `debug` for getting the unminified version of the script, to help with debugging.
 
