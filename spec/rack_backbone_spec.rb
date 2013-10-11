@@ -5,7 +5,14 @@ require_relative "../lib/rack/backbone.rb"
 
 class Rack::Backbone # for clarity!
 
+shared_examples "the debug option is set" do
+  it { should_not include expected }
+  it { should include unminified }
+  it { should_not end_with ".min.js" }
+end
+
 describe "The class methods" do
+
   let(:path) {::File.join(DEFAULT_OPTIONS[:http_path],BACKBONE_FILE_NAME)}
   let(:env) { {"rack.backbone.http_path" => path} }
   let(:default_options) { {} }
@@ -14,19 +21,51 @@ describe "The class methods" do
   context "Given the organisation option" do
     context "of nil (the default)" do
       let(:options) { {:organisation => nil } }
-      it { should == "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
+      let(:expected){ "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}"}
+      it { should == expected }
+      context "and debug" do
+        let(:unminified) { "#{CDN::CLOUDFLARE[0..-8]}.js" }
+        let(:options) {
+          {:organisation => nil, :debug => true }
+        }
+        it_should_behave_like "the debug option is set"
+      end
     end
     context "of :jsdelivr" do
       let(:options) { {:organisation => :jsdelivr } }
-      it { should == "<script src='#{CDN::JSDELIVR}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
+      let(:expected){ "<script src='#{CDN::JSDELIVR}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
+      it { should == expected }
+      context "and debug" do
+        let(:unminified) { "#{CDN::JSDELIVR[0..-8]}.js" }
+        let(:options) {
+          {:organisation => :jsdelivr, :debug => true }
+        }
+        it_should_behave_like "the debug option is set"
+      end
     end
     context "of :cloudflare" do
       let(:options) { {:organisation => :cloudflare } }
-      it { should == "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
+      let(:expected){ "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}"}
+      it { should == expected }
+      context "and debug" do
+        let(:unminified) { "#{CDN::CLOUDFLARE[0..-8]}.js" }
+        let(:options) {
+          {:organisation => nil, :debug => true }
+        }
+        it_should_behave_like "the debug option is set"
+      end
     end
     context "of false, to get the fallback script only" do
       let(:options) { {:organisation => false } }
-      it { should == "<script src='#{path}'></script>" }    
+      let(:expected){ "<script src='#{path}'></script>" }
+      it { should == expected } 
+      context "and debug" do
+        let(:unminified) { "#{CDN::CLOUDFLARE[0..-8]}.js" }
+        let(:options) {
+          {:organisation => false, :debug => true }
+        }
+        it { should == expected } 
+      end   
     end
   end
 
