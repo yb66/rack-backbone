@@ -2,7 +2,7 @@ module Rack
   class Backbone
     
     # the version of this library
-    VERSION = "0.1.0"
+    VERSION = "0.1.1"
 
     # the version of Backbone it supports.
     BACKBONE_VERSION = "1.0.0" 

@@ -1,6 +1,7 @@
 # CH CH CH CHANGES #
 
-## Next release ##
+
+## Saturday the 12th of October 2013, v0.1.1 ##
 
 * Had a rogue newline since the fallback script was split. Fixed.
 
