@@ -83,7 +83,7 @@ STR
 
         script_src = "#{script_src[0..-8]}.js" if debug
 
-        %Q!<script src='#{script_src}'></script>\n#{FALLBACK_TOP}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
+        %Q!<script src='#{script_src}'></script>\n#{FALLBACK_TOP.chomp}#{env["rack.backbone.http_path"]}#{FALLBACK_BOTTOM}!
       else
         "<script src='#{env["rack.backbone.http_path"]}'></script>"
       end

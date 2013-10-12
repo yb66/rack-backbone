@@ -19,12 +19,14 @@ describe "The class methods" do
   subject(:cdn) { Rack::Backbone.cdn env, default_options.merge(options) }
 
   context "Given the organisation option" do
+    let(:fallback) { "#{FALLBACK_TOP.chomp}#{path}#{FALLBACK_BOTTOM}" }
+    let(:expected){ "<script src='#{cdn_name}'></script>\n#{fallback}"}
     context "of nil (the default)" do
       let(:options) { {:organisation => nil } }
-      let(:expected){ "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}"}
+      let(:cdn_name) {CDN::CLOUDFLARE }
       it { should == expected }
       context "and debug" do
-        let(:unminified) { "#{CDN::CLOUDFLARE[0..-8]}.js" }
+        let(:unminified) { "#{cdn_name[0..-8]}.js" }
         let(:options) {
           {:organisation => nil, :debug => true }
         }
@@ -33,10 +35,10 @@ describe "The class methods" do
     end
     context "of :jsdelivr" do
       let(:options) { {:organisation => :jsdelivr } }
-      let(:expected){ "<script src='#{CDN::JSDELIVR}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}" }
+      let(:cdn_name) {CDN::JSDELIVR }
       it { should == expected }
       context "and debug" do
-        let(:unminified) { "#{CDN::JSDELIVR[0..-8]}.js" }
+        let(:unminified) { "#{cdn_name[0..-8]}.js" }
         let(:options) {
           {:organisation => :jsdelivr, :debug => true }
         }
@@ -45,10 +47,10 @@ describe "The class methods" do
     end
     context "of :cloudflare" do
       let(:options) { {:organisation => :cloudflare } }
-      let(:expected){ "<script src='#{CDN::CLOUDFLARE}'></script>\n#{FALLBACK_TOP}#{path}#{FALLBACK_BOTTOM}"}
+      let(:cdn_name) {CDN::CLOUDFLARE }
       it { should == expected }
       context "and debug" do
-        let(:unminified) { "#{CDN::CLOUDFLARE[0..-8]}.js" }
+        let(:unminified) { "#{cdn_name[0..-8]}.js" }
         let(:options) {
           {:organisation => nil, :debug => true }
         }
@@ -57,10 +59,11 @@ describe "The class methods" do
     end
     context "of false, to get the fallback script only" do
       let(:options) { {:organisation => false } }
+      let(:cdn_name) { CDN::CLOUDFLARE }
       let(:expected){ "<script src='#{path}'></script>" }
       it { should == expected } 
       context "and debug" do
-        let(:unminified) { "#{CDN::CLOUDFLARE[0..-8]}.js" }
+        let(:unminified) { "#{cdn_name[0..-8]}.js" }
         let(:options) {
           {:organisation => false, :debug => true }
         }
