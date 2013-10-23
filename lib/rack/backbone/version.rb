@@ -5,10 +5,10 @@ module Rack
     VERSION = "0.1.1"
 
     # the version of Backbone it supports.
-    BACKBONE_VERSION = "1.0.0" 
+    BACKBONE_VERSION = "1.1.0" 
 
     # This is the release date of the Backbone file, it makes an easy "Last-Modified" date for setting the headers around caching.
     # @todo remember to change Last-Modified with each release!
-    BACKBONE_VERSION_DATE = "Wed, 20 Mar 2013 12:13:55 +0000" 
+    BACKBONE_VERSION_DATE = "Thu, 10 Oct 2013 17:57:30 -0700" 
   end
 end
