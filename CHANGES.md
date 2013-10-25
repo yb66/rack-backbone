@@ -1,5 +1,13 @@
 # CH CH CH CHANGES #
 
+## Friday the 25th of October 2013, v1.0.0 ##
+
+* Updated backbone.js to v1.1.0.
+* Moved the fallback scripts into versioned directories a la other rack-xxx libs.
+* Decided that the API to this library is stable enough to move to v1.0.0 (see sermver).
+
+----
+
 
 ## Saturday the 12th of October 2013, v0.1.1 ##
 
