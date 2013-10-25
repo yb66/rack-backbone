@@ -9,15 +9,12 @@ module Rack
     include Rack::JQuery::Helpers
 
     # Current file name of fallback.
-    BACKBONE_FILE_NAME = "backbone-#{BACKBONE_VERSION}-min.js"
+    BACKBONE_FILE_NAME = "backbone-min.js"
 
     # Fallback source map file name without version.
     # Because the main script doesn't call
     # a versioned file.
-    BACKBONE_SOURCE_MAP_UNVERSIONED = "backbone-min.map"
-
-    # Fallback source map file name.
-    BACKBONE_SOURCE_MAP = "backbone-#{BACKBONE_VERSION}-min.map"
+    BACKBONE_SOURCE_MAP = "backbone-min.map"
 
 
     # Namespaced CDNs for convenience.
@@ -105,7 +102,7 @@ STR
     def initialize( app, options={} )
       @app, @options  = app, DEFAULT_OPTIONS.merge(options)
       @http_path_to_backbone = ::File.join @options[:http_path], BACKBONE_FILE_NAME
-      @http_path_to_source_map = ::File.join @options[:http_path], BACKBONE_SOURCE_MAP_UNVERSIONED
+      @http_path_to_source_map = ::File.join @options[:http_path], BACKBONE_SOURCE_MAP
       @organisation = options.fetch :organisation, :media_temple
     end
 
@@ -132,14 +129,14 @@ STR
           response.status = 304
         else
           response.status = 200
-          response.write ::File.read( ::File.expand_path "../../../vendor/assets/javascripts/#{BACKBONE_FILE_NAME}", __FILE__)
+          response.write ::File.read( ::File.expand_path "../../../vendor/assets/javascripts/libs/backbone/#{BACKBONE_VERSION}/#{BACKBONE_FILE_NAME}", __FILE__)
         end
         response.finish
       elsif request.path_info == @http_path_to_source_map
         response = Rack::Response.new
         # No need for caching with the source map
         response.status = 200
-        response.write ::File.read( ::File.expand_path "../../../vendor/assets/javascripts/#{BACKBONE_SOURCE_MAP}", __FILE__)
+        response.write ::File.read( ::File.expand_path "../../../vendor/assets/javascripts/libs/backbone/#{BACKBONE_VERSION}/#{BACKBONE_SOURCE_MAP}", __FILE__)
         response.finish
       else
         @app.call(env)
