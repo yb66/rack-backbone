@@ -1,5 +1,7 @@
 # Rack::Backbone
 
+NO LONGER UNDER DEVELOPMENT, obvs.
+
 [Backbone](http://backbonejs.org/) CDN script tags and fallback in one neat package.
 
 ### Build status ###
